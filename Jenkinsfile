@@ -14,6 +14,11 @@ pipeline {
                     sh 'npm run build'
                 }
             }
+            post { 
+                success { 
+                    archiveArtifact artifacts: "website/build/test-site/", fingerprint: true
+                }
+            }
         }        
     }
 }
