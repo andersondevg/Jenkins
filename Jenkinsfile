@@ -16,7 +16,7 @@ pipeline {
             }
             post { 
                 success { 
-                    archiveArtifact artifacts: "website/build/test-site/", fingerprint: true
+                    archiveArtifacts artifacts: "website/build/test-site/", fingerprint: true
                 }
             }
         }        
