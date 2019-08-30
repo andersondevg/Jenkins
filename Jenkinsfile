@@ -5,7 +5,7 @@ pipeline {
         stage('build') {
             agent{
                 docker{
-                    image 'node'
+                    image 'andersondevg/nj8'
                 }
             }
             steps {
@@ -17,6 +17,29 @@ pipeline {
             post { 
                 success { 
                     archiveArtifacts artifacts: "website/build/test-site/", fingerprint: true
+                }
+            }
+        }
+        stage('test'){
+            parallel{
+                stage('code analysis'){
+                    agent{
+                        docker{
+                            image 'andersondeg/nj8'
+                            args '--network readetrabalho_devopsjenkins'
+                        }
+                    }
+                    environment{
+                        scannerHome = tool 'sonarqube'
+                    }
+                }
+                steps{
+                    withSonarQubeEnv('sonarqube'){
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                    timeout(time: 10, unit: 'MINUTES'){
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }        

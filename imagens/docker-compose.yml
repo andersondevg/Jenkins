@@ -1,0 +1,42 @@
+version: '3'
+
+networks:
+  devopsjenkins:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  jenkins-data-iesp:
+  jenkins-sonar-iesp:
+
+services:
+  jenkins:
+    image: jenkinsci/blueocean
+    container_name: jenkins
+    restart: always
+    ports:
+      - 8080:8080
+    user: root
+
+    networks:
+      devopsjenkins:
+        ipv4_address: 172.20.128.2
+
+    volumes:
+      - jenkins-data-iesp:/var/jenkins_home
+      - jenkins-sonar-iesp:/root/.sonar/native-sonar-scanner
+      - /var/run/docker.sock:/var/run/docker.sock      
+
+    environment:
+      JAVA_OPTS: -Duser.timezone=America/Fortaleza
+
+  sonarqube:
+    container_name: sonar
+    image: sonarqube
+    restart: always
+    ports:
+      - 9000:9000
+    networks:
+      devopsjenkins:
+        ipv4_address: 172.20.128.3
